@@ -34,22 +34,23 @@ def calcAvgColor(sprite):
     sprite.avgH = np.uint8(auxH/(size*size))
     sprite.avgS = np.uint8(auxS/(size*size))
     sprite.avgV = np.uint8(auxV/(size*size))
-		
+	
 def compareSprites(spr1, spr2):
-    if ((spr1.avgH < spr2.avgH)):
+    if ((spr1.avgV < spr2.avgV)):
         return 1
-    elif ((spr1.avgH > spr2.avgH)):
+    elif ((spr1.avgV > spr2.avgV)):
         return 0
     else:
-        if((spr1.avgS < spr2.avgS) ):
+        if((spr1.avgH < spr2.avgH) ):
             return 1
-        elif ((spr1.avgS > spr2.avgS)):
+        elif ((spr1.avgH > spr2.avgH)):
             return 0
         else:
-            if((spr1.avgV < spr2.avgV)):
+            if((spr1.avgS < spr2.avgS)):
                 return 1
             else:
                 return 0
+
 
 '''
 def compareSprites(spr1, spr2):
@@ -59,104 +60,35 @@ def compareSprites(spr1, spr2):
         return 1
     else:
         return 0
+
 '''
-'''
-def compareSprites(spr1, spr2):
-    if(spr1.avgV < 50 or spr1.avgS < 50):
-        if (spr2.avgV > 50 and spr2.avgS > 50):
-            return 1
-        elif(spr2.avgV < 50):
-            if ((spr1.avgH - spr2.avgH) < -0.01):
-                return 1
-            elif ((spr1.avgH - spr2.avgH) > 0.01):
-                return 0
-            else:
-                if((spr1.avgV - spr2.avgV) < -0.01):
-                    return 1
-                elif((spr1.avgV - spr2.avgV) > 0.01):
-                    return 0
-                else:
-                    return 1
-        else:
-            if ((spr1.avgH - spr2.avgH) < -0.01):
-                return 1
-            elif ((spr1.avgH - spr2.avgH) > 0.01):
-                return 0
-            else:
-                if((spr1.avgS - spr2.avgS) < -0.01):
-                    return 1
-                elif((spr1.avgS - spr2.avgS) > 0.01):
-                    return 0
-                else:
-                    return 1
-    elif(spr2.avgV < 50 or spr2.avgS < 50):
-        if (spr1.avgV > 50 and spr1.avgS > 50):
-            return 0
-        elif(spr1.avgV < 50):
-            if ((spr1.avgH - spr2.avgH) < -0.01):
-                return 1
-            elif ((spr1.avgH - spr2.avgH) > 0.01):
-                return 0
-            else:
-                if((spr1.avgV - spr2.avgV) < -0.01):
-                    return 1
-                elif((spr1.avgV - spr2.avgV) > 0.01):
-                    return 0
-                else:
-                    return 0
-        else:
-            if ((spr1.avgH - spr2.avgH) < -0.01):
-                return 1
-            elif ((spr1.avgH - spr2.avgH) > 0.01):
-                return 0
-            else:
-                if((spr1.avgS - spr2.avgS) < -0.01):
-                    return 1
-                elif((spr1.avgS - spr2.avgS) > 0.01):
-                    return 0
-                else:
-                    return 0
-    else:
-        if ((spr1.avgH - spr2.avgH) < -0.01):
-            return 1
-        elif ((spr1.avgH - spr2.avgH) > 0.01):
-            return 0
-        else:
-            if((spr1.avgS - spr2.avgS) < -0.01):
-                return 1
-            elif ((spr1.avgS - spr2.avgS) > 0.01):
-                return 0
-            else:
-                if((spr1.avgV - spr2.avgV) < -0.01):
-                    return 1
-                else:
-                    return 0
-'''
-def swap(i, j, spriteList):                    
-     spriteList[i], spriteList[j] = spriteList[j], spriteList[i] 
+
+def swap(i, j, spriteList, spriteListHSV):                    
+     spriteList[i], spriteList[j] = spriteList[j], spriteList[i]
+     spriteListHSV[i], spriteListHSV[j] = spriteListHSV[j], spriteListHSV[i]
  
-def heapify(end,i,spriteList):   
+def heapify(end,i,spriteList, spriteListHSV):   
     l=2 * i + 1 
     r=2 * (i + 1)   
     max=i   
     #if l < end and list[i] < list[l]: 
-    if l < end and compareSprites(spriteList[i], spriteList[l]): 
+    if l < end and compareSprites(spriteListHSV[i], spriteListHSV[l]): 
         max = l   
     #if r < end and list[max] < list[r]:   
-    if r < end and compareSprites(spriteList[max], spriteList[r]):   
+    if r < end and compareSprites(spriteListHSV[max], spriteListHSV[r]):   
         max = r   
     if max != i:   
-        swap(i, max, spriteList)   
-        heapify(end, max, spriteList)   
+        swap(i, max, spriteList, spriteListHSV)   
+        heapify(end, max, spriteList, spriteListHSV)   
  
-def heap_sort(spriteList):     
+def heap_sort(spriteList, spriteListHSV):     
     end = len(spriteList)   
     start = end // 2 - 1
     for i in range(start, -1, -1):   
-        heapify(end, i, spriteList)   
+        heapify(end, i, spriteList, spriteListHSV)   
     for i in range(end-1, 0, -1):   
-        swap(i, 0, spriteList)   
-        heapify(i, 0, spriteList)  
+        swap(i, 0, spriteList, spriteListHSV)   
+        heapify(i, 0, spriteList, spriteListHSV)  
 
 def findHueRange(color):
     if color == "green":
@@ -166,14 +98,21 @@ def findHueRange(color):
     
 # mouse callback function
 def getColorInPixel(event,x,y,flags,param):
-    if event == cv2.EVENT_LBUTTONDBLCLK:
+    if event == cv2.EVENT_LBUTTONDOWN:
         global hasSelected
         hasSelected = 1
         global selectX
         selectX = x
         global selectY
         selectY = y
-        
+
+def isNeighbor(sprite, pixel):
+    #print(str(sprite.avgH)+"|"+str(sprite.avgS)+"|"+str(sprite.avgV))
+    if(sprite.avgH > (pixel[0]-20) and sprite.avgH < (pixel[0]+20)):
+        if(sprite.avgS > (pixel[1]-20) and sprite.avgS < (pixel[1]+20)):
+            if(sprite.avgV > (pixel[2]-20) and sprite.avgV < (pixel[2]+20)):
+                return 1
+    return 0
 
 # Create a black image, a window and bind the function to window
 
@@ -189,6 +128,7 @@ height, width = img_original.shape[:2]
 
 spriteSize = 16
 spriteSheet = list()
+spriteSheetHSV = list()
 spriteCount = 0
 sprite = [[Sprite() for row in range(0,spriteSize)] for col in range(0,spriteSize)]
 
@@ -197,16 +137,33 @@ img_hsv = cv2.cvtColor(img_original, cv2.COLOR_BGR2HSV)
 
 width, height = img_original.shape[:2]
 
+cv2.namedWindow('Raw')
+cv2.setMouseCallback('Raw',getColorInPixel)
+cv2.imshow('Raw', img_original)
+#cv2.waitKey(0)
+#while(hasSelected==0):
+#    pass
+print(str(selectX)+" "+str(selectY))
+pixel = img_hsv[selectX][selectY]
+print(str(pixel[0])+" "+str(pixel[1])+" "+str(pixel[2]))
 for i in range(int(width/spriteSize)):
     for j in range(int(height/spriteSize)):
         spriteSheet.append(Sprite())
+        spriteSheetHSV.append(Sprite())
         for x in range(spriteSize):
             for y in range(spriteSize):
                 (spriteSheet[len(spriteSheet)-1]).sprite[x][y] = img_original[i*spriteSize+x][j*spriteSize+y]
-        calcAvgColor(spriteSheet[len(spriteSheet)-1])
+                (spriteSheetHSV[len(spriteSheetHSV)-1]).sprite[x][y] = img_hsv[i*spriteSize+x][j*spriteSize+y]
+        calcAvgColor(spriteSheetHSV[len(spriteSheetHSV)-1])
         if isChoosingColor=='1':
-            if ((spriteSheet[len(spriteSheet)-1]).avgH < minHue) or ((spriteSheet[len(spriteSheet)-1]).avgH > maxHue):
+            if ((spriteSheetHSV[len(spriteSheetHSV)-1]).avgH < minHue) or ((spriteSheet[len(spriteSheetHSV)-1]).avgH > maxHue):
                 spriteSheet.pop()
+                spriteSheetHSV.pop()
+        if isChoosingColor=='2':
+            if(not isNeighbor(spriteSheetHSV[len(spriteSheetHSV)-1], pixel)):
+                spriteSheet.pop()
+                spriteSheetHSV.pop()
+                
 
 size = len(spriteSheet)            
 #creates a new image with float, as the uint8 may overflow and gamma returns a float
@@ -222,14 +179,12 @@ for i in range(int(width/spriteSize)):
             spriteCount = spriteCount + 1
 spriteCount = 0
 
-cv2.imshow('Raw', img_original)
-cv2.setMouseCallback('Raw',getColorInPixel)
 
 cv2.imshow('Reduced', img_res)
 
 cv2.imwrite('Reduced.png', img_res)
 
-heap_sort(spriteSheet)
+heap_sort(spriteSheet, spriteSheetHSV)
 for i in range(int(width/spriteSize)):
     for j in range(int(height/spriteSize)):
         if(spriteCount < size):
